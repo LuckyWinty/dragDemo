@@ -7,6 +7,13 @@
 	left:50%;
 	margin-top: -200px;
 	margin-left: -250px;
+}
+#form{
+	position: absolute;
+	width:500px;
+	height:400px;
+	top:0px;
+	left: 0px;
 	background-color: #ccc;
 }
 .drag{

@@ -13,7 +13,6 @@ module.exports=Button;
 
 },{"react":256}],2:[function(require,module,exports){
 var React=require('react');
-// var Drag=require('./DragMixin.jsx');
 var addons = require('react-addons');
 var ReactDOM=require('react-dom');
 
@@ -28,40 +27,21 @@ var DragArea=React.createClass({displayName: "DragArea",
 		}
 	},
 	startDrag:function(e){
-		var test=document.getElementById('form');
-		test.style.color='red';
+		var dragBox=document.getElementById('form');
+        var newState={};
 		var event=e||window.event;
 		event.preventDefault();
-		var computedStyle=document.defaultView.getComputedStyle(ReactDOM.findDOMNode(this.refs.dragBox),null);
-		this.setState({
-			left:computedStyle.left,
-			top:computedStyle.top,
-			currentX:event.clientX,
-			currentY:event.clientY,
-			flag:true
-		});
-		console.log("-----start--------"+this.state.top);
-	},
-	move:function(event){
-        var e = event ? event : window.event;
-        if (this.state.flag) {
-            var nowX = e.clientX, nowY = e.clientY;
-            var disX = nowX - this.state.currentX, disY = nowY - this.state.currentY;
-            ReactDOM.findDOMNode(this.refs.dragBox).style.left = parseInt(this.state.left) + disX + "px";
-            ReactDOM.findDOMNode(this.refs.dragBox).style.top = parseInt(this.state.top) + disY + "px";
-        }
-	},
-	endStart:function(){
-	var computedStyle=document.defaultView.getComputedStyle(ReactDOM.findDOMNode(this.refs.dragBox),null);
-          this.setState({
-          	left:computedStyle.left,
-			top:computedStyle.top,
-            flag:false
-          });
+		var computedStyle=document.defaultView.getComputedStyle(dragBox,null);
+		newState.left=computedStyle.left;
+		newState.top=computedStyle.top;
+		newState.currentX=event.clientX;
+        newState.currentY=event.clientY;
+        newState.flag=true;
+        this.props.callbackParent(newState);
 	},
 	render:function(){
 		return (
-			React.createElement("div", {className: "drag", id: "drag", ref: "dragBox", onMouseDown: this.startDrag, onMouseMove: this.move, onMouseUp: this.endStart}, "我可以被拖走！")
+			React.createElement("div", {className: "drag", id: "drag", onMouseDown: this.startDrag}, "在我身上按住鼠标可以把From拖走！")
 			);
 	}
 });
@@ -82,8 +62,16 @@ var MyFrom=React.createClass({displayName: "MyFrom",
     return {
         username:"",
         password:"",
-        checked: true
+        checked: true,
+        left: 0,
+        top: 0,
+        currentX: 0,
+        currentY: 0,
+        flag: false
     }; 
+},
+onChildChanged:function(newState){
+    this.setState(newState);
 },
 handleChange:function(event){
     var newState={};
@@ -95,21 +83,41 @@ submitHandler: function (event) {
     event.preventDefault();
     console.log(this.state); 
 },
+move:function(event){
+    console.log("move------------"+this.state.currentX)
+    var e = event ? event : window.event;
+    if (this.state.flag) {
+
+        console.log("yy------------"+this.state.currentY)
+        var nowX = e.clientX, nowY = e.clientY;
+        var disX = nowX - this.state.currentX, disY = nowY - this.state.currentY;
+        ReactDOM.findDOMNode(this.refs.dragBox).style.left = parseInt(this.state.left) + disX + "px";
+        ReactDOM.findDOMNode(this.refs.dragBox).style.top = parseInt(this.state.top) + disY + "px";
+    }
+},
+endStart:function(){
+    var computedStyle=document.defaultView.getComputedStyle(ReactDOM.findDOMNode(this.refs.dragBox),null);
+    this.setState({
+        left:computedStyle.left,
+        top:computedStyle.top,
+        flag:false
+    });
+},
 render:function(){
    return (
-    React.createElement("form", {className: "form-horizontal", id: "form", onSubmit: this.submitHandler}, 
-    React.createElement(DragArea, null), 
+    React.createElement("form", {className: "form-horizontal", id: "form", ref: "dragBox", onSubmit: this.submitHandler, onMouseMove: this.move, onMouseUp: this.endStart}, 
+    React.createElement(DragArea, {callbackParent: this.onChildChanged}), 
     React.createElement("div", {id: "form-wrap"}, 
     React.createElement(MyInput, {name: "username", labelId: "userId", labelTip: "用户名", type: "text", placeholder: "请输入用户名", value: this.state.username, onChange: this.handleChange}), 
     React.createElement(MyInput, {name: "password", labelId: "pw", labelTip: "密码", type: "password", placeholder: "请输入密码", value: this.state.password, onChange: this.handleChange}), 
     React.createElement("div", {className: "form-group"}, 
     React.createElement("div", {className: "col-sm-offset-2 col-sm-10"}, 
-      React.createElement("div", {className: "checkbox"}, 
-        React.createElement("label", null, 
-          React.createElement("input", {name: "checked", type: "checkbox", checked: this.state.checked, onChange: this.handleChange}), " 记住我"
-        )
-      )
-     )
+    React.createElement("div", {className: "checkbox"}, 
+    React.createElement("label", null, 
+    React.createElement("input", {name: "checked", type: "checkbox", checked: this.state.checked, onChange: this.handleChange}), " 记住我"
+    )
+    )
+    )
     ), 
     React.createElement(MyButton, {type: "submit", ButtonTip: "登陆"})
     )
