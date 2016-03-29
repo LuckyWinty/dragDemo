@@ -15,10 +15,9 @@ var MyFrom=React.createClass({
     }; 
 },
 handleChange:function(event){
-    console.log(event.target.name);
     var newState={};
     var name=event.target.name;
-    newState[name]=name=="checkbox"?event.target.checked:event.target.value;
+    newState[name]=name=="checked"? event.target.checked:event.target.value;
     this.setState(newState);
 },
 submitHandler: function (event) {
@@ -36,7 +35,7 @@ render:function(){
     <div className="col-sm-offset-2 col-sm-10">
       <div className="checkbox">
         <label>
-          <input name="checkbox" type="checkbox" checked={this.state.checked} onChange={this.handleChange} /> 记住我
+          <input name="checked" type="checkbox" checked={this.state.checked} onChange={this.handleChange} /> 记住我
         </label>
       </div>
      </div>
