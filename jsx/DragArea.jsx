@@ -13,13 +13,13 @@ var DragArea=React.createClass({
 		}
 	},
 	startDrag:function(e){
-		var dragBox=document.getElementById('form');
+		// var dragBox=document.getElementById('form');
         var newState={};
 		var event=e||window.event;
 		event.preventDefault();
-		var computedStyle=document.defaultView.getComputedStyle(dragBox,null);
-		newState.left=computedStyle.left;
-		newState.top=computedStyle.top;
+		// var computedStyle=document.defaultView.getComputedStyle(dragBox,null);
+		// newState.left=computedStyle.left;
+		// newState.top=computedStyle.top;
 		newState.currentX=event.clientX;
         newState.currentY=event.clientY;
         newState.flag=true;
